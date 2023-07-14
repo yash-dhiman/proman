@@ -55,9 +55,12 @@ function obfuscate_multiple($codes, $returnArray = false)
 
     $numbers        = array();
 
-    foreach($codes as $code)
+    if(!empty($codes))
     {
-        $numbers[]  = obfuscate($code);
+        foreach($codes as $code)
+        {
+            $numbers[]  = obfuscate($code);
+        }
     }
     
     return $returnArray ? $numbers : ($string ? json_encode($numbers) : $numbers);

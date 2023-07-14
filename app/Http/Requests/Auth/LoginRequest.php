@@ -46,17 +46,14 @@ class LoginRequest extends FormRequest
                                                         ]);
                                                     });
         $companyInfo                = $result->toArray();
-        $credentials                = $this->validate([
-                                                            'email' => ['required', 'email'],
-                                                            'password' => ['required'],
-                                                        ]);
+        $credentials                = $this->validate($this->rules());
 
         $credentials['company_id']  = $companyInfo['company_id'];
         $credentials['active']      = 1;
         $credentials['deleted']     = 0;
         $credentials['suspended']   = 0;
 
-        // $this->ensureIsNotRateLimited();
+        $this->ensureIsNotRateLimited();
 
         if (! Auth::attempt($credentials, $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
