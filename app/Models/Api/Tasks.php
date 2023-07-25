@@ -22,11 +22,18 @@ class Tasks extends Model
                                     'company_id',
                                     'project_id',
                                     'tasklist_id',
-                                    'created_at',
-                                    'category_id',
-                                    'status_id',
+                                    'status',
+                                    'stage_id',
                                     'start_date',
                                     'end_date',
+                                    'assignees',
+                                    'created_at',
+                                    'created_by',
+                                    'updated_by',
+                                    'custom_fields',
+                                    'completed',
+                                    'completed_by',
+                                    'completed_at',
                                 ];
 
     /**
@@ -66,5 +73,11 @@ class Tasks extends Model
         }
 
         return $query->where('tasks.company_id', $company_id)->get()->toArray();
+    }
+
+    public function save_task($task)
+    {
+        $this->fill($task);
+        return $this->save();
     }
 }

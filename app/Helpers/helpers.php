@@ -93,4 +93,24 @@ function deobfuscate_multiple($codes, $returnArray = false)
     
     return $returnArray ? $numbers : ($string ? json_encode($numbers) : $numbers);
 }
+
+/**
+ * Logged in user id
+ *
+ * @return int  Current logged in user id
+ */ 
+function get_user_id(): int
+{
+    return app('request')->user()['user_id'];
+}
+
+/**
+ * Function to get current company id
+ *
+ * @return int  Company id
+ */
+function get_company_id(): int
+{
+    return app('request')->user()['company_id'];
+}
 ?>

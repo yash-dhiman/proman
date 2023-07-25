@@ -92,6 +92,9 @@ class ProjectsController extends Controller
         $this->company_id                   = $this->current_user['company_id'];
         $this->current_user_id              = $this->current_user['user_id'];
 
+        // data validation 
+        $request->validate(array());
+
         $project                            = new Projects;
         $project->company_id                = $this->company_id;
         $project->created_by                = $this->current_user_id;
@@ -128,17 +131,8 @@ class ProjectsController extends Controller
                                     ], 404);
         }
 
-        if(isset($request->end_date) && !isset($request->start_date))
-        {
-            if(!empty($project->start_date) && $request->end_date < $project->start_date)
-            {
-                throw ValidationException::withMessages(['end_date' => 'The end date field must be a date after or equal to start date.']);
-            }
-            elseif(empty($project->start_date))
-            {
-                $request->start_date    = $request->end_date;
-            }
-        }
+        // data validation 
+        $request->validate($project);
 
         $project->updated_by                = $this->current_user_id;
 

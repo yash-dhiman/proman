@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\Tasks;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Requests\Api\Projects\TaskRequest;
 use App\Models\Api\Tasks;
-use Illuminate\Validation\Rules;
 use App\Http\Resources\Api\TaskResource;
-use Illuminate\Validation\ValidationException;
 
 class TasksController extends Controller
 {
@@ -89,40 +88,28 @@ class TasksController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, $project_id, $tasklist_id)
+    public function store(TaskRequest $request, $project_id, $tasklist_id)
     {
-        $this->current_user                 = $request->user();
-        $this->company_id                   = $this->current_user['company_id'];
-        $this->current_user_id              = $this->current_user['user_id'];
-        $project_id                         = deobfuscate($project_id);
-        $tasklist_id                        = deobfuscate($tasklist_id);
+        // data validation 
+        $request->validate(array());
 
-        $task_data                          = $request->validate([
-                                                                    'task_title'    => ['required'],
-                                                                    'start_date'    => 'date', 
-                                                                    'end_date'      => 'date|after_or_equal:start_date',
-                                                                ]);
+        $this->current_user             = $request->user();
+        $this->company_id               = $this->current_user['company_id'];
+        $this->current_user_id          = $this->current_user['user_id'];
+        
+        $task                           = new Tasks;
+        $task_data                      = $request->get_post_data();
+        $task_data['project_id']        = deobfuscate($project_id);
+        $task_data['tasklist_id']       = deobfuscate($tasklist_id);
 
-        $task = new Tasks;
-        $task->task_title                   = $task_data['task_title'];
-        $task->task_description             = $request->task_description;
-        $task->start_date                   = $request->start_date;
-        $task->end_date                     = $request->end_date;
-        $task->company_id                   = $this->company_id;
-        $task->project_id                   = $project_id;
-        $task->tasklist_id                  = $tasklist_id;
-        $task->created_by                   = $this->current_user_id;
-        $task->status                       = $request->status;
-        $task->stage_id                     = deobfuscate($request->stage_id);
-        $task->assignees                    = isset($request->assignees) ? json_encode(deobfuscate_multiple($request->assignees)) : '[]';
-
-        $task->save();
-
-        return response()->json([
-                                        "success" => true,
-                                        "message" => "New task created",
-                                        'data' => new TaskResource($task)
-                                    ]);
+        if($task->save_task($task_data))
+        {
+            return response()->json([
+                                            "success" => true,
+                                            "message" => "New task created",
+                                            'data' => new TaskResource($task)
+                                        ]);
+        }
     }
 
     /**
@@ -131,7 +118,7 @@ class TasksController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $project_id, $tasklist_id, $task_id)
+    public function update(TaskRequest $request, $project_id, $tasklist_id, $task_id)
     {
         $this->current_user             = $request->user();
         $this->company_id               = $this->current_user['company_id'];
@@ -139,11 +126,7 @@ class TasksController extends Controller
         $project_id                     = deobfuscate($project_id);
         $tasklist_id                    = deobfuscate($tasklist_id);
         $task_id                        = deobfuscate($task_id);
-        $task_data                      = $request->validate([
-                                                                    'task_title' => ['required'],
-                                                                    'start_date'    => 'date', 
-                                                                    'end_date'      => 'date|after_or_equal:start_date',
-                                                                ]);
+        $task_data                      = $request->get_put_data();
 
         $task                           = tasks::where('company_id', $this->company_id)
                                             ->where('project_id', $project_id)
@@ -158,28 +141,10 @@ class TasksController extends Controller
                                     ], 404);
         }
 
-        if(isset($request->end_date) && !isset($request->start_date))
-        {
-            if(!empty($task->start_date) && $request->end_date < $task->start_date)
-            {
-                throw ValidationException::withMessages(['end_date' => 'The end date field must be a date after or equal to start date.']);
-            }
-            elseif(empty($task->start_date))
-            {
-                $request->start_date    = $request->end_date;
-            }
-        }
-
-        $task->task_title               = $task_data['task_title'];
-        $task->task_description         = isset($request->task_description) ? $request->task_description : $task->task_description;
-        $task->start_date               = isset($request->start_date) ? $request->start_date : $task->start_date;
-        $task->end_date                 = isset($request->end_date) ? $request->end_date : $task->end_date;
-        $task->updated_by               = $this->current_user_id;
-        $task->status                   = isset($request->status) ? $request->status : $task->status;
-        $task->stage_id                 = isset($request->stage_id) ? deobfuscate($request->stage_id) : $task->stage_id3;
-        $task->assignees                = isset($request->assignees) ? json_encode(deobfuscate_multiple($request->assignees)) : '[]';
-
-        if($task->save())
+        // data validation 
+        $request->validate($task);
+        
+        if($task->save_task($task_data))
         {
             return response()->json([
                                             "success" => true,

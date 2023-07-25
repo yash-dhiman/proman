@@ -17,6 +17,7 @@ class TaskResource extends JsonResource
         return [
                     'task_id'                   => $this->resource['task_id'] ? obfuscate($this->resource['task_id']) : '',
                     'task_title'                => $this->resource['task_title'] ? $this->resource['task_title'] : '',
+                    'ticket_id'                 => $this->resource['ticket_id'] ? $this->resource['project']['project_code'] . '-' . $this->resource['ticket_id'] : '',
                     'task_description'          => $this->resource['task_description'] ? $this->resource['task_description'] : '',
                     'project_id'                => $this->resource['project_id'] ? obfuscate($this->resource['project_id']) : '',
                     'tasklist_id'               => $this->resource['tasklist_id'] ? obfuscate($this->resource['tasklist_id']) : '',

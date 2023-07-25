@@ -2,10 +2,10 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\api\UsersController;
-use App\Http\Controllers\api\ProjectsController;
-use App\Http\Controllers\api\TasklistsController;
-use App\Http\Controllers\api\TasksController;
+use App\Http\Controllers\Api\UsersController;
+use App\Http\Controllers\Api\ProjectsController;
+use App\Http\Controllers\Api\TasklistsController;
+use App\Http\Controllers\Api\Tasks\TasksController;
 
 /*
 |--------------------------------------------------------------------------
