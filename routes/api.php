@@ -6,6 +6,9 @@ use App\Http\Controllers\Api\UsersController;
 use App\Http\Controllers\Api\ProjectsController;
 use App\Http\Controllers\Api\TasklistsController;
 use App\Http\Controllers\Api\Tasks\TasksController;
+use App\Http\Controllers\Api\Tasks\CommentsController;
+use App\Http\Controllers\Api\Tasks\CommentRepliesController;
+use App\Http\Controllers\Api\FileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,6 +31,15 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::prefix('projects')->group(function () {
         Route::resource('{project_id}/tasklists/{tasklist_id}/tasks', TasksController::class);        
     });
+    
+    Route::prefix('projects')->group(function () {
+        Route::resource('{project_id}/tasklists/{tasklist_id}/tasks/{task_id}/comments/{comment_id}/replies', CommentRepliesController::class);        
+    });
+    
+    Route::prefix('projects')->group(function () {
+        Route::resource('{project_id}/tasklists/{tasklist_id}/tasks/{task_id}/comments', CommentsController::class);        
+    });
 
     Route::resource('projects', ProjectsController::class);
+    Route::post('files', [FileController::class, 'upload'])->name('files.store');
 });

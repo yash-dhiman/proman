@@ -4,14 +4,15 @@ namespace App\Http\Controllers\Api\Tasks;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Http\Requests\Api\Projects\TaskRequest;
-use App\Models\Api\Tasks;
-use App\Http\Resources\Api\TaskResource;
+use App\Http\Requests\Api\Tasks\TaskRequest;
+use App\Models\Api\Tasks\Tasks;
+use App\Http\Resources\Api\Tasks\TaskResource;
+use App\Http\Resources\Api\Tasks\TaskCollection;
 
 class TasksController extends Controller
 {
     /**
-     * ing of Tasks.
+     * Listing of Tasks.
      *
      * @param Request $request
      * @return \Illuminate\Http\Response
@@ -33,18 +34,7 @@ class TasksController extends Controller
                                     ], 404);
         }
 
-        $tasks_info             = array();
-
-        foreach($tasks_data as $task_data)
-        {
-            $tasks_info[]       = new TaskResource($task_data);
-        }
-
-        return response()->json([
-                                    "success" => true,
-                                    "message" => "Tasks data",
-                                    'data' => $tasks_info
-                                ]);
+        return response()->json( new TaskCollection($tasks_data) );
     }
 
     /**
@@ -76,9 +66,9 @@ class TasksController extends Controller
         $tasks_info             = array();
         $tasks_info             = new taskResource($tasks_data);
         return response()->json([
-                                    "success" => true,
-                                    "message" => "Task details",
-                                    'data' => $tasks_info
+                                    "success"   => true,
+                                    "message"   => "Task details",
+                                    'data'      => $tasks_info
                                 ]);
     }
 
@@ -104,10 +94,17 @@ class TasksController extends Controller
 
         if($task->save_task($task_data))
         {
+            $tasks_data                 = Tasks::find_tasks($this->company_id, $task->project_id, $task->tasklist_id, $task->task_id);
+
+            if(!empty($tasks_data))
+            {
+                $tasks_data             = $tasks_data[0];
+            }
+
             return response()->json([
-                                            "success" => true,
-                                            "message" => "New task created",
-                                            'data' => new TaskResource($task)
+                                            "success"   => true,
+                                            "message"   => "New task created",
+                                            'data'      => new TaskResource($tasks_data)
                                         ]);
         }
     }

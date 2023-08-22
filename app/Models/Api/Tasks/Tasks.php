@@ -1,10 +1,14 @@
 <?php
 
-namespace App\Models\api;
+namespace App\Models\api\Tasks;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use App\Models\Api\Projects;
+use App\Models\Api\Tasklists;
+use App\Models\Api\Tasks\Comments;
 
 class Tasks extends Model
 {
@@ -17,8 +21,8 @@ class Tasks extends Model
      * @var array<int, string>
      */
     protected $fillable     = [
-                                    'task_title', 
-                                    'task_description', 
+                                    'title', 
+                                    'description', 
                                     'company_id',
                                     'project_id',
                                     'tasklist_id',
@@ -30,6 +34,7 @@ class Tasks extends Model
                                     'created_at',
                                     'created_by',
                                     'updated_by',
+                                    'updated_at',
                                     'custom_fields',
                                     'completed',
                                     'completed_by',
@@ -79,5 +84,13 @@ class Tasks extends Model
     {
         $this->fill($task);
         return $this->save();
+    }
+
+    /**
+     * Get all of the task's comments.
+     */
+    public function comments(): MorphMany
+    {
+        return $this->morphMany(Comments::class, 'comments');
     }
 }

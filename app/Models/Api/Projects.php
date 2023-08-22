@@ -18,8 +18,8 @@ class Projects extends Model
      * @var array<int, string>
      */
     protected $fillable     = [
-                                    'project_title',
-                                    'project_description',
+                                    'title',
+                                    'description',
                                     'company_id',
                                     'created_at',
                                     'category_id',

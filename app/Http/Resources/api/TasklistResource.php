@@ -16,8 +16,8 @@ class TasklistResource extends JsonResource
     {
         return [
             'tasklist_id'               => $this->resource['tasklist_id'] ? obfuscate($this->resource['tasklist_id']) : '',
-            'tasklist_title'            => $this->resource['tasklist_title'] ? $this->resource['tasklist_title'] : '',
-            'tasklist_description'      => $this->resource['tasklist_description'] ? $this->resource['tasklist_description'] : '',
+            'title'                     => $this->resource['title'] ? $this->resource['title'] : '',
+            'description'               => $this->resource['description'] ? $this->resource['description'] : '',
             // 'assignees'                 => $this->resource['assignees'] ? obfuscate_multiple($this->resource['assignees'], true) : [],
             'created_by'                => $this->resource['created_by'] ? obfuscate($this->resource['created_by']) : '',
             'created_at'                => $this->resource['created_at'] ? format_date_time($this->resource['created_at']) : '',

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Api\Projects;
+namespace App\Http\Requests\Api\Tasks;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\ValidationException;
@@ -121,22 +121,23 @@ class TaskRequest extends FormRequest
     }
 
     /**
-     * Validate posted data with existing data. Like start_date and end_date comparison 
+     * Checking request is valid or not.
+     * Checking Project and tasklist exists.
      *
      * @return void
      */
     public function is_valid_request()
     {
-        $this->merge(['project_data' => ProjectHelper::project_exist(deobfuscate($this->project_id))]);
+        $this->merge(['project' => ProjectHelper::project_exist(deobfuscate($this->project_id))]);
 
-        if(!$this->project_data)
+        if(!$this->project)
         {
             throw new InvalidRequestException('Invalid request');
         }
         
-        $this->merge(['tasklist_data' => TasklistHelper::tasklist_exist(deobfuscate($this->tasklist_id))]);
+        $this->merge(['tasklist' => TasklistHelper::tasklist_exist(deobfuscate($this->tasklist_id))]);
 
-        if(!$this->tasklist_data)
+        if(!$this->tasklist)
         {
             throw new InvalidRequestException('Invalid request');
         }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Resources\api;
+namespace App\Http\Resources\Api;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -18,8 +18,8 @@ class ProjectResource extends JsonResource
     {
         return [
                     'project_id'            => $this->resource['project_id'] ? obfuscate($this->resource['project_id']) : '',
-                    'project_title'         => $this->resource['project_title'] ? $this->resource['project_title'] : '',
-                    'project_description'   => $this->resource['project_description'] ? $this->resource['project_description'] : '',
+                    'title'                 => $this->resource['title'] ? $this->resource['title'] : '',
+                    'description'           => $this->resource['description'] ? $this->resource['description'] : '',
                     'project_code'          => $this->resource['project_code'] ? $this->resource['project_code'] : '',
                     'start_date'            => $this->resource['start_date'] ? format_date($this->resource['start_date']) : '',
                     'end_date'              => $this->resource['end_date'] ? format_date($this->resource['end_date']) : '',

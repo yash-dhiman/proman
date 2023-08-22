@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\Api\Projects\ProjectRequest;
 use App\Models\Api\Projects;
 use App\Http\Resources\Api\ProjectResource;
+use App\Http\Resources\Api\ProjectCollection;
 use Illuminate\Validation\ValidationException;
 
 class ProjectsController extends Controller
@@ -22,26 +23,20 @@ class ProjectsController extends Controller
         $this->current_user     = $request->user();
         $this->company_id       = $this->current_user['company_id'];
         $this->current_user_id  = $this->current_user['user_id'];
-        $projects_data             = Projects::find_projects($this->company_id);
+        $projects_data          = Projects::find_projects($this->company_id);
+
         if(!$projects_data)
         {
             return response()->json([
-                "success" => false,
-                "message" => "Projects not found."
+                'success' => false,
+                'message' => 'Projects not found.'
             ], 404);
-        }
-        
-        $projects_info             = array();
-        
-        foreach($projects_data as $project_data)
-        {            
-            $projects_info[]       = new ProjectResource($project_data);
         }
 
         return response()->json([
-                                    "success" => true,
-                                    "message" => "Projects data",
-                                    'data' => $projects_info
+                                    'success'   => true,
+                                    'message'   => 'Projects data',
+                                    'data'      => new ProjectCollection($projects_data)
                                 ]);
     }
 
@@ -53,7 +48,6 @@ class ProjectsController extends Controller
      */
     public function show(Request $request, $project_id)
     {
-        print_r($project_id);
         $this->current_user     = $request->user();
         $this->company_id       = $this->current_user['company_id'];
         $this->current_user_id  = $this->current_user['user_id'];
@@ -66,17 +60,15 @@ class ProjectsController extends Controller
         else
         {
             return response()->json([
-                                        "success" => false,
-                                        "message" => "Project not found."
+                                        'success' => false,
+                                        'message' => 'Project not found.'
                                     ], 404);
         }
 
-        $projects_info             = array();
-        $projects_info             = new ProjectResource($projects_data);
         return response()->json([
-                                    "success" => true,
-                                    "message" => "Project details",
-                                    'data' => $projects_info
+                                    'success'   => true,
+                                    'message'   => 'Project details',
+                                    'data'      => new ProjectResource($projects_data)
                                 ]);
     }
 
@@ -103,9 +95,9 @@ class ProjectsController extends Controller
         if($project->save_project($request->all()))
         {
             return response()->json([
-                                        "success" => true,
-                                        "message" => "New project created",
-                                        'data' => new ProjectResource($project)
+                                        'success'   => true,
+                                        'message'   => 'New project created',
+                                        'data'      => new ProjectResource($project)
                                     ]);
         }
     }
@@ -126,8 +118,8 @@ class ProjectsController extends Controller
         if(!$project)
         {
             return response()->json([
-                                        "success" => false,
-                                        "message" => "Invalid request. Project, you trying to update, not found."
+                                        'success' => false,
+                                        'message' => 'Invalid request. Project, you trying to update, not found.'
                                     ], 404);
         }
 
@@ -141,9 +133,9 @@ class ProjectsController extends Controller
         if($project->save_project($request->all()))
         {
             return response()->json([
-                                        "success" => true,
-                                        "message" => "Project update successfuly.",
-                                        'data' => new ProjectResource($project)
+                                        'success'   => true,
+                                        'message'   => 'Project update successfuly.',
+                                        'data'      => new ProjectResource($project)
                                     ]);
         }
     }
@@ -165,16 +157,16 @@ class ProjectsController extends Controller
         if(!$project)
         {
             return response()->json([
-                                        "success" => false,
-                                        "message" => "Project not found."
+                                        'success' => false,
+                                        'message' => 'Project not found.'
                                     ], 404);
         }
 
         $project->delete();
 
         return response()->json([
-                                    "success" => true,
-                                    "message" => "Project deleted successfuly."
+                                    'success' => true,
+                                    'message' => 'Project deleted successfuly.'
                                 ]);
     }
 }

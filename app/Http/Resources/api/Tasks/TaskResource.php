@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Resources\api;
+namespace App\Http\Resources\api\Tasks;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -16,9 +16,9 @@ class TaskResource extends JsonResource
     {
         return [
                     'task_id'                   => $this->resource['task_id'] ? obfuscate($this->resource['task_id']) : '',
-                    'task_title'                => $this->resource['task_title'] ? $this->resource['task_title'] : '',
+                    'title'                     => $this->resource['title'] ? $this->resource['title'] : '',
                     'ticket_id'                 => $this->resource['ticket_id'] ? $this->resource['project']['project_code'] . '-' . $this->resource['ticket_id'] : '',
-                    'task_description'          => $this->resource['task_description'] ? $this->resource['task_description'] : '',
+                    'description'               => $this->resource['description'] ? $this->resource['description'] : '',
                     'project_id'                => $this->resource['project_id'] ? obfuscate($this->resource['project_id']) : '',
                     'tasklist_id'               => $this->resource['tasklist_id'] ? obfuscate($this->resource['tasklist_id']) : '',
                     'start_date'                => $this->resource['start_date'] ? format_date($this->resource['start_date']) : '',

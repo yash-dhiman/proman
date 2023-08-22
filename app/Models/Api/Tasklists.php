@@ -18,8 +18,8 @@ class Tasklists extends Model
      * @var array<int, string>
      */
     protected $fillable     = [
-                                    'tasklist_title', 
-                                    'tasklist_description', 
+                                    'title', 
+                                    'description', 
                                     'company_id',
                                     'created_at',
                                     'category_id',

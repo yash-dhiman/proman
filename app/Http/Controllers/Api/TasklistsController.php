@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Api\Tasklists;
 use App\Http\Resources\Api\TasklistResource;
+use App\Http\Resources\Api\TasklistCollection;
 
 class TasklistsController extends Controller
 {
@@ -31,17 +32,10 @@ class TasklistsController extends Controller
                                     ], 404);
         }
 
-        $tasklists_info             = array();
-
-        foreach($tasklists_data as $tasklist_data)
-        {
-            $tasklists_info[]       = new TasklistResource($tasklist_data);
-        }
-
         return response()->json([
-                                    "success" => true,
-                                    "message" => "Tasklists data",
-                                    'data' => $tasklists_info
+                                    "success"   => true,
+                                    "message"   => "Tasklists data",
+                                    'data'      => new TasklistCollection($tasklists_data)
                                 ]);
     }
 
