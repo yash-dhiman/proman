@@ -4,6 +4,7 @@ namespace App\Http\Resources\api\Tasks;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\Api\FileCollection;
 
 class TaskResource extends JsonResource
 {
@@ -32,6 +33,7 @@ class TaskResource extends JsonResource
                     'updated_by'                => $this->resource['updated_by'] ? obfuscate($this->resource['updated_by']) : '',
                     'deleted'                   => $this->resource['deleted'] ? true : false,
                     'deleted_by'                => $this->resource['deleted_by'] ? obfuscate($this->resource['deleted_by']) : '',
+                    'attachments'               => new FileCollection($this->resource['attachments']),
                 ];
     }
 }

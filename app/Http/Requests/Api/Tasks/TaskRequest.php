@@ -7,6 +7,7 @@ use Illuminate\Validation\ValidationException;
 use App\Exceptions\InvalidRequestException;
 use App\Helpers\ProjectHelper;
 use App\Helpers\TasklistHelper;
+use App\Libraries\Files;
 
 class TaskRequest extends FormRequest
 {
@@ -26,21 +27,23 @@ class TaskRequest extends FormRequest
     public function rules(): array
     {
         return [
-                    'task_title'    => ['required'],
-                    'start_date'    => 'date', 
+                    'title'    => ['required'],
+                    'start_date'    => 'date',
                     'end_date'      => 'date|after_or_equal:start_date',
                 ];
     }
 
     /**
      * Get posted task data
-     * 
+     *
      * Note: All ids will be deobfuscate
      *
      * @return array    Posted task data
      */
     public function get_post_data()
     {
+        $files                      = new Files($this);
+        $files->extractInlineImages('T', true, true);
         $task                       = $this->all();
         $task['company_id']         = get_company_id();
         $task['created_by']         = get_user_id();
@@ -60,13 +63,15 @@ class TaskRequest extends FormRequest
 
     /**
      * Get posted task data to update task info
-     * 
+     *
      * Note: All ids will be deobfuscate
      *
      * @return array    Posted task data
      */
     public function get_put_data()
     {
+        $files                      = new Files($this);
+        $files->extractInlineImages('T', true, true);
         $task                       = $this->all();
         $task['updated_by']         = get_user_id();
 
@@ -74,7 +79,7 @@ class TaskRequest extends FormRequest
         {
             $task['stage_id']       = deobfuscate($task['stage_id']);
         }
-        
+
         if(isset($task['completed']))
         {
             if($task['completed'] == true)
@@ -98,7 +103,7 @@ class TaskRequest extends FormRequest
     }
 
     /**
-     * Validate posted data with existing data. Like start_date and end_date comparison 
+     * Validate posted data with existing data. Like start_date and end_date comparison
      *
      * @return void
      */
@@ -134,12 +139,41 @@ class TaskRequest extends FormRequest
         {
             throw new InvalidRequestException('Invalid request');
         }
-        
+
         $this->merge(['tasklist' => TasklistHelper::tasklist_exist(deobfuscate($this->tasklist_id))]);
 
         if(!$this->tasklist)
         {
             throw new InvalidRequestException('Invalid request');
         }
+    }
+    
+    /**
+     * Function to prepare attachments data and return as array
+     *
+     * Note: All ids will be deobfuscate
+     *
+     * @return array
+     */
+    public function prepare_attachments_data($task_id = null)
+    {
+        $attachments = $this->attachments;
+
+        if(!empty($attachments))
+        {
+            foreach($attachments as $key => $attachment)
+            {
+                $attachments[$key]['file_id']           = deobfuscate($attachment['file_id']);
+                $attachments[$key]['company_id']        = get_company_id();
+                $attachments[$key]['created_by']        = $attachments[$key]['updated_by'] = get_user_id();
+                $attachments[$key]['project_id']        = deobfuscate($this->project_id);
+                $attachments[$key]['related_to_id']     = $task_id;
+                $attachments[$key]['related_to']        = 'T';
+                $attachments[$key]['file_extension']    = $attachment['file_extension'];
+                $attachments[$key]['file_real_name']    = $attachment['file_real_name'];
+            }
+        }
+
+        return $attachments;
     }
 }

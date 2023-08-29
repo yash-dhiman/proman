@@ -92,7 +92,9 @@ class TasksController extends Controller
         $task_data['project_id']        = deobfuscate($project_id);
         $task_data['tasklist_id']       = deobfuscate($tasklist_id);
 
-        if($task->save_task($task_data))
+        $attachments                    = $request->prepare_attachments_data();
+
+        if($task->save_task($task_data, $attachments))
         {
             $tasks_data                 = Tasks::find_tasks($this->company_id, $task->project_id, $task->tasklist_id, $task->task_id);
 
@@ -140,8 +142,10 @@ class TasksController extends Controller
 
         // data validation 
         $request->validate($task);
+
+        $attachments            = $request->prepare_attachments_data($task_id);
         
-        if($task->save_task($task_data))
+        if($task->update_task($task_data, $attachments))
         {
             return response()->json([
                                             "success" => true,
