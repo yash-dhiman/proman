@@ -137,7 +137,7 @@ class CommentsController extends Controller
         // data validation
         $request->validate([]);
 
-        $attachments = $request->prepare_attachments_data($comment_id);
+        $attachments            = $request->prepare_attachments_data($comment_id);
 
         if ($comment->update_comment($comment_data, $attachments)) {
             $comment                = Comments::find_comments($this->company_id, $task_id, $comment_id);

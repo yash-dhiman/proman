@@ -113,4 +113,18 @@ function get_company_id(): int
 {
     return app('request')->user()['company_id'];
 }
+
+if (!function_exists('company_file_url')) {
+    /**
+     * Function to get company file url
+     *
+     * @return string   Company's files url
+     */
+    function company_file_url()
+    {
+        $protocol = 'http://';
+        $file_url = $protocol . app('request')->user()->company->company_url . '/files';
+        return $file_url;
+    }
+}
 ?>

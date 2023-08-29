@@ -49,11 +49,15 @@ class Comments extends Model
     }
 
     /**
-     * Get the comments with tasks.
+     * Get the attachment with comments/replies.
      */
     public function attachments(): HasMany
     {
-        return $this->HasMany(Files::class, 'related_to_id', 'comment_id')->where('company_id', get_company_id())->where('related_to', 'TC')->where('deleted', 0);
+        return $this->HasMany(Files::class, 'related_to_id', 'comment_id')->where('company_id', get_company_id())->where('related_to', 'TC')->where('deleted', 0)
+        ->where(function ($query) {
+            $query->where('extra_info->show_as_attachment', 'true')
+                  ->orWhereNull('extra_info');
+        });
     }
 
     public static function find_comments(int $company_id, int $task_id = null, int $comment_id = null, array $filter = array())

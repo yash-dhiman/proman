@@ -8,6 +8,7 @@ use App\Exceptions\InvalidRequestException;
 use App\Helpers\ProjectHelper;
 use App\Helpers\TasklistHelper;
 use App\Helpers\TaskHelper;
+use App\Libraries\Files;
 
 class CommentRequest extends FormRequest
 {
@@ -60,30 +61,34 @@ class CommentRequest extends FormRequest
 
     /**
      * Get posted task data
-     * 
+     *
      * Note: All ids will be deobfuscate
      *
      * @return array    Posted task data
      */
     public function get_post_data()
     {
-        $comment                       = $this->all();
-        $comment['company_id']         = get_company_id();
-        $comment['created_by']         = get_user_id();
+        $files                          = new Files($this);
+        $files->extractInlineImages();
+        $comment                        = $this->all();
+        $comment['company_id']          = get_company_id();
+        $comment['created_by']          = get_user_id();
 
         return $comment;
     }
 
     /**
      * Get posted task data to update task info
-     * 
+     *
      * Note: All ids will be deobfuscate
      *
      * @return array    Posted task data
      */
     public function get_put_data()
     {
-        $comment                       = $this->all();
+        $files                          = new Files($this);
+        $files->extractInlineImages();
+        $comment                        = $this->all();
         return $comment;
     }
 
@@ -91,7 +96,7 @@ class CommentRequest extends FormRequest
      * Function to prepare attachments data and return as array
      *
      * Note: All ids will be deobfuscate
-     * 
+     *
      * @return array
      */
     public function prepare_attachments_data($comment_id = null)
@@ -104,8 +109,7 @@ class CommentRequest extends FormRequest
             {
                 $attachments[$key]['file_id']           = deobfuscate($attachment['file_id']);
                 $attachments[$key]['company_id']        = get_company_id();
-                $attachments[$key]['created_by']        = get_user_id();
-                $attachments[$key]['updated_by']        = get_user_id();
+                $attachments[$key]['created_by']        = $attachments[$key]['updated_by'] = get_user_id();
                 $attachments[$key]['project_id']        = deobfuscate($this->project_id);
                 $attachments[$key]['related_to_id']     = $comment_id;
                 $attachments[$key]['related_to']        = 'TC';
