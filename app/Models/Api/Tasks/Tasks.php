@@ -108,8 +108,7 @@ class Tasks extends Model
 
             $response   = Files::upsert($attachments, ['file_id'], ['file_type','related_to','related_to_id','file_real_name', 'file_name']);
         }
-
-        
+       
         return $response;
     }
 

@@ -124,24 +124,26 @@ class TasksController extends Controller
         $this->current_user_id          = $this->current_user['user_id'];
         $project_id                     = deobfuscate($project_id);
         $tasklist_id                    = deobfuscate($tasklist_id);
-        $task_id                        = deobfuscate($task_id);
-        $task_data                      = $request->get_put_data();
-
+        $task_id                        = deobfuscate($task_id);        
+        
         $task                           = tasks::where('company_id', $this->company_id)
-                                            ->where('project_id', $project_id)
+        ->where('project_id', $project_id)
                                             ->where('tasklist_id', $tasklist_id)
                                             ->where('deleted', 0)->find($task_id);
-
-        if(!$task)
-        {
-            return response()->json([
-                                        "success" => false,
-                                        "message" => "Invalid request. task, you trying to update, not found."
-                                    ], 404);
-        }
-
+                                            
+                                            
+                                            if(!$task)
+                                            {
+                                                return response()->json([
+                                                    "success" => false,
+                                                    "message" => "Invalid request. task, you trying to update, not found."
+                                                ], 404);
+                                            }
+                                            
         // data validation 
         $request->validate($task);
+        $task_data                      = $request->get_put_data();
+        print_r($request->all());
 
         $attachments            = $request->prepare_attachments_data($task_id);
         

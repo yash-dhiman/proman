@@ -27,10 +27,10 @@ class TaskRequest extends FormRequest
     public function rules(): array
     {
         return [
-                    'title'    => ['required'],
-                    'start_date'    => 'date',
-                    'end_date'      => 'date|after_or_equal:start_date',
-                ];
+            'title'    => ['required'],
+            'start_date'    => 'date',
+            'end_date'      => 'date|after_or_equal:start_date',
+        ];
     }
 
     /**
@@ -44,17 +44,16 @@ class TaskRequest extends FormRequest
     {
         $files                      = new Files($this);
         $files->extractInlineImages('T', true, true);
+        $this->prepare_assignees();
         $task                       = $this->all();
         $task['company_id']         = get_company_id();
         $task['created_by']         = get_user_id();
 
-        if(isset($task['stage_id']))
-        {
+        if (isset($task['stage_id'])) {
             $task['stage_id']       = deobfuscate($task['stage_id']);
         }
 
-        if(isset($task['assignees']))
-        {
+        if (isset($task['assignees'])) {
             $task['assignees']      = json_encode(deobfuscate_multiple($task['assignees']));
         }
 
@@ -72,31 +71,26 @@ class TaskRequest extends FormRequest
     {
         $files                      = new Files($this);
         $files->extractInlineImages('T', true, true);
+        $this->prepare_assignees();
         $task                       = $this->all();
         $task['updated_by']         = get_user_id();
 
-        if(isset($task['stage_id']))
-        {
+        if (isset($task['stage_id'])) {
             $task['stage_id']       = deobfuscate($task['stage_id']);
         }
 
-        if(isset($task['completed']))
-        {
-            if($task['completed'] == true)
-            {
+        if (isset($task['completed'])) {
+            if ($task['completed'] == true) {
                 $task['completed_by']       = get_user_id();
                 $task['completed_at']       = date('Y-m-d H:i:s');
-            }
-            else
-            {
+            } else {
                 $task['completed_by']       = null;
                 $task['completed_at']       = null;
             }
         }
 
-        if(isset($task['assignees']))
-        {
-            $task['assignees']      = json_encode(deobfuscate_multiple($task['assignees']));
+        if (isset($task['assignees'])) {
+            $task['assignees']      = json_encode($task['assignees']);
         }
 
         return $task;
@@ -112,17 +106,15 @@ class TaskRequest extends FormRequest
         $this->is_valid_request();
 
         // validate start_date and end_date
-        if(isset($this->end_date) && !isset($this->start_date))
-        {
-            if(!empty($task->start_date) && $this->end_date < $task->start_date)
-            {
+        if (isset($this->end_date) && !isset($this->start_date)) {
+            if (!empty($task->start_date) && $this->end_date < $task->start_date) {
                 throw ValidationException::withMessages(['end_date' => 'The end date field must be a date after or equal to start date.']);
-            }
-            elseif(empty($task->start_date))
-            {
+            } elseif (empty($task->start_date)) {
                 $this->start_date    = $this->end_date;
             }
         }
+
+        $this->merge(array('task' => $task));
     }
 
     /**
@@ -135,19 +127,17 @@ class TaskRequest extends FormRequest
     {
         $this->merge(['project' => ProjectHelper::project_exist(deobfuscate($this->project_id))]);
 
-        if(!$this->project)
-        {
+        if (!$this->project) {
             throw new InvalidRequestException('Invalid request');
         }
 
         $this->merge(['tasklist' => TasklistHelper::tasklist_exist(deobfuscate($this->tasklist_id))]);
 
-        if(!$this->tasklist)
-        {
+        if (!$this->tasklist) {
             throw new InvalidRequestException('Invalid request');
         }
     }
-    
+
     /**
      * Function to prepare attachments data and return as array
      *
@@ -159,10 +149,8 @@ class TaskRequest extends FormRequest
     {
         $attachments = $this->attachments;
 
-        if(!empty($attachments))
-        {
-            foreach($attachments as $key => $attachment)
-            {
+        if (!empty($attachments)) {
+            foreach ($attachments as $key => $attachment) {
                 $attachments[$key]['file_id']           = deobfuscate($attachment['file_id']);
                 $attachments[$key]['company_id']        = get_company_id();
                 $attachments[$key]['created_by']        = $attachments[$key]['updated_by'] = get_user_id();
@@ -175,5 +163,33 @@ class TaskRequest extends FormRequest
         }
 
         return $attachments;
+    }
+
+    /**
+     * Prepare list of assignees (New and old assignees)
+     * Assignees' list is mergerd in request data within meta_data
+     * 
+     * Note: All ids will be deobfuscate
+     * @return void
+     */
+    public function prepare_assignees()
+    {
+        $newAssignees = [];
+        $oldAssignees = [];
+
+        if (!empty($this->assignees)) {
+            $this->merge(array('assignees' => deobfuscate_multiple($this->assignees)));
+
+            if (!empty($this->task->assignees)) {
+                $originalAssignees  = json_decode($this->task->assignees);
+                $newAssignees       = array_diff($this->assignees, $originalAssignees);
+                $oldAssignees       = array_diff($originalAssignees, $this->assignees);
+            } else {
+                $newAssignees   = $this->assignees;
+                $oldAssignees   = array();
+            }
+        }
+
+        $this->merge(array('meta_data' => array('new_assignees' => $newAssignees, 'old_assignees' => $oldAssignees)));
     }
 }

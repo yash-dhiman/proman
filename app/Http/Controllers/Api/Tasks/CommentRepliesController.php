@@ -8,6 +8,7 @@ use App\Http\Requests\Api\Tasks\CommentRequest;
 use App\Models\Api\Tasks\Comments;
 use App\Http\Resources\Api\Tasks\ReplyResource;
 use App\Http\Resources\Api\Tasks\ReplyCollection;
+use App\Libraries\Mentions;
 
 class CommentRepliesController extends Controller
 {
@@ -60,21 +61,21 @@ class CommentRepliesController extends Controller
         $replies_data           = Comments::find_replies($this->company_id, $task_id, $comment_id, $reply_id);
 
         if (!empty($replies_data)) {
-            $replies_data      = $replies_data[0];
+            $replies_data       = $replies_data[0];
         } else {
             return response()->json([
-                'success' => false,
-                'message' => 'Comment reply not found.'
-            ], 404);
+                                        'success' => false,
+                                        'message' => 'Comment reply not found.'
+                                    ], 404);
         }
 
         $replies_info          = array();
         $replies_info          = new ReplyResource($replies_data);
         return response()->json([
-            'success'   => true,
-            'message'   => 'Comment reply details',
-            'data'      => $replies_info
-        ]);
+                                    'success'   => true,
+                                    'message'   => 'Comment reply details',
+                                    'data'      => $replies_info
+                                ]);
     }
 
     /**
@@ -106,6 +107,11 @@ class CommentRepliesController extends Controller
             $replies_data           = Comments::find_replies($this->company_id, $task_id, $comment_id, $reply->comment_id);
 
             if (!empty($replies_data)) {
+                
+                // extract and save mentions on comment
+                $mention            = new Mentions($request);
+                $mention->save('TC', $reply->comment_id);
+
                 $replies_data       = $replies_data[0];
             }
 
@@ -152,6 +158,11 @@ class CommentRepliesController extends Controller
 
         if ($reply->update_comment($comment_data, $attachments)) {
             $reply              = Comments::find_replies($this->company_id, $task_id, $comment_id, $reply_id);
+            
+            // extract and save mentions on comment
+            $mention            = new Mentions($request);
+            $mention->save('TC', $reply_id, true);
+
             return response()->json([
                                         'success' => true,
                                         'message' => 'Comment reply update successfuly.',

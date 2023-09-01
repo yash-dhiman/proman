@@ -8,6 +8,7 @@ use App\Http\Requests\Api\Tasks\CommentRequest;
 use App\Models\Api\Tasks\Comments;
 use App\Http\Resources\Api\Tasks\CommentResource;
 use App\Http\Resources\Api\Tasks\CommentCollection;
+use App\Libraries\Mentions;
 
 class CommentsController extends Controller
 {
@@ -96,6 +97,10 @@ class CommentsController extends Controller
             $comments_data          = Comments::find_comments($this->company_id, $task_id, $comment->comment_id);
 
             if (!empty($comments_data)) {
+                // extract and save mentions on comment
+                $mention            = new Mentions($request);
+                $mention->save('TC', $comment->comment_id);
+
                 $comments_data      = $comments_data[0];
             }
 
@@ -141,6 +146,11 @@ class CommentsController extends Controller
 
         if ($comment->update_comment($comment_data, $attachments)) {
             $comment                = Comments::find_comments($this->company_id, $task_id, $comment_id);
+            
+            // extract and save mentions on comment
+            $mention            = new Mentions($request);
+            $mention->save('TC', $comment_id, true);
+
             return response()->json([
                                         "success" => true,
                                         "message" => "Comment update successfuly.",

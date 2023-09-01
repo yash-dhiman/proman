@@ -1,6 +1,5 @@
 <?php
 namespace App\Libraries;
-use App\Exceptions\ApiException;  
 use Illuminate\Http\Request;
 use App\Models\Api\Files as filesModel;
 use Illuminate\Support\Str;
