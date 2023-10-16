@@ -3,7 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UsersController;
-use App\Http\Controllers\Api\ProjectsController;
+use App\Http\Controllers\Api\Projects\ProjectsController;
+use App\Http\Controllers\Api\Projects\RolesController;
 use App\Http\Controllers\Api\TasklistsController;
 use App\Http\Controllers\Api\Tasks\TasksController;
 use App\Http\Controllers\Api\Tasks\CommentsController;
@@ -26,6 +27,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::prefix('projects')->group(function () {
         Route::resource('{project_id}/tasklists', TasklistsController::class);        
+    });
+    
+    Route::prefix('projects')->group(function () {
+        Route::resource('{project_id}/roles', RolesController::class);        
     });
 
     Route::prefix('projects')->group(function () {

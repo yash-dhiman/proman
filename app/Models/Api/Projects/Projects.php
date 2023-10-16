@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\api;
+namespace App\Models\Api\Projects;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -21,6 +21,7 @@ class Projects extends Model
                                     'title',
                                     'description',
                                     'company_id',
+                                    'created_by',
                                     'created_at',
                                     'category_id',
                                     'status_id',

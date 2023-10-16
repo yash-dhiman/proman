@@ -1,7 +1,7 @@
 <?php
 namespace App\Helpers;
 
-use App\Models\Api\Projects;
+use App\Models\Api\Projects\Projects;
 use App\Helpers\Builder;
 
 class ProjectHelper

@@ -94,6 +94,13 @@ class Tasks extends Model
         return $query->where('tasks.company_id', $company_id)->get()->toArray();
     }
 
+    /**
+     * create new task and update the attachments / files
+     *
+     * @param array $task        Array of task's data
+     * @param array $attachments    Array of attachemnts
+     * @return bool
+     */
     public function save_task($task, $attachments = array())
     {
         $this->fill($task);
