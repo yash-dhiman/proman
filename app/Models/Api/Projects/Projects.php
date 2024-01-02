@@ -40,7 +40,7 @@ class Projects extends Model
             $query  = $query->where('projects.project_id', $project_id);
         }
 
-        return $query->where('projects.company_id', $company_id)->get()->toArray();
+        return $query->where('projects.company_id', $company_id)->get();
     }
 
     public function save_project($project)

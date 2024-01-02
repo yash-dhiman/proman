@@ -5,9 +5,9 @@ namespace App\Http\Controllers\Api\Projects;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\Api\Projects\ProjectRequest;
-use App\Models\Api\Projects;
-use App\Http\Resources\Api\ProjectResource;
-use App\Http\Resources\Api\ProjectCollection;
+use App\Models\Api\Projects\Projects;
+use App\Http\Resources\Api\Projects\ProjectResource;
+use App\Http\Resources\Api\Projects\ProjectCollection;
 use Illuminate\Validation\ValidationException;
 
 class ProjectsController extends Controller
