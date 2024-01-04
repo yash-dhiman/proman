@@ -51,5 +51,8 @@ $app->singleton(
 | from the actual running of the application and sending responses.
 |
 */
-
+// header('Access-Control-Allow-Origin: http://app.proman.local');
+// header('Access-Control-Allow-Credentials: true');
+// header('Content-TypeAccess-Control-Allow-Methods: GET,HEAD,OPTIONS,POST,PUT');
+// header('Access-Control-Allow-Headers: Content-Type,x-xsrf-token, referrer-policy, Access-Control-Allow-Origin');
 return $app;
