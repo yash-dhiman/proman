@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\Tasks\TasksController;
 use App\Http\Controllers\Api\Tasks\CommentsController;
 use App\Http\Controllers\Api\Tasks\CommentRepliesController;
 use App\Http\Controllers\Api\FileController;
+use App\Http\Resources\api\UserResource;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,8 +24,12 @@ use App\Http\Controllers\Api\FileController;
 */
 
 Route::middleware(['auth:sanctum'])->group(function () {
-    Route::resource('users', UsersController::class);
+    Route::get('/user', function (Request $request) {
+        return new UserResource($request->user());
+    });
 
+    Route::resource('users', UsersController::class);
+    
     Route::prefix('projects')->group(function () {
         Route::resource('{project_id}/tasklists', TasklistsController::class);        
     });
