@@ -24,7 +24,7 @@ use App\Http\Resources\api\UserResource;
 */
 
 Route::middleware(['auth:sanctum'])->group(function () {
-    Route::get('/user', function (Request $request) {
+    Route::get('/users/me', function (Request $request) {
         return new UserResource($request->user());
     });
 
